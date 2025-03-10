@@ -1,9 +1,39 @@
 import { useState } from 'react';
 
+// First, let's define our interfaces
+interface Client {
+  id: number;
+  name: string;
+  engagement: string;
+  sector: string;
+  genAiStatus: 'Approved' | 'In Review' | 'Not Started' | 'Not Permitted';
+  usage: number;
+  doraImplemented: string;
+}
+
+interface DoraMetrics {
+  deploymentFrequency: 'Elite' | 'High' | 'Medium' | 'Low';
+  leadTime: 'Elite' | 'High' | 'Medium' | 'Low';
+  mttr: 'Elite' | 'High' | 'Medium' | 'Low';
+  changeFailureRate: 'Elite' | 'High' | 'Medium' | 'Low';
+  cadence: string;
+}
+
+interface FeedbackData {
+  satisfaction: number;
+  productivity: number;
+  summary: string;
+  successStories: string;
+}
+
 // Simple app that showcases the GenAI and DORA metrics tracking concept
 const GenAIDORATracker = () => {
-  // Sample data for demonstration
-  const clients = [
+  // Update your state definition
+  const [selectedClient, setSelectedClient] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'genai' | 'dora' | 'feedback'>('overview');
+
+  // Type your data structures
+  const clients: Client[] = [
     {
       id: 1,
       name: "Department of Energy",
@@ -32,8 +62,8 @@ const GenAIDORATracker = () => {
       doraImplemented: "Yes"
     }
   ];
-  
-  const doraMetrics = {
+
+  const doraMetrics: Record<number, DoraMetrics> = {
     1: {
       deploymentFrequency: "Medium",
       leadTime: "Medium",
@@ -56,8 +86,8 @@ const GenAIDORATracker = () => {
       cadence: "Weekly"
     }
   };
-  
-  const feedbackData = {
+
+  const feedbackData: Record<number, FeedbackData> = {
     1: {
       satisfaction: 4.2,
       productivity: 4.5,
@@ -77,12 +107,9 @@ const GenAIDORATracker = () => {
       successStories: "50% reduction in time to market for new features, 70% reduction in documentation time"
     }
   };
-  
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
-  
-  // Helper function for status color classes
-  const getStatusColor = (status) => {
+
+  // Add types to your helper functions
+  const getStatusColor = (status: Client['genAiStatus']): string => {
     switch(status) {
       case 'Approved': return 'bg-green-100 text-green-800';
       case 'In Review': return 'bg-yellow-100 text-yellow-800';
@@ -91,8 +118,8 @@ const GenAIDORATracker = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
-  
-  const getDoraLevelColor = (level) => {
+
+  const getDoraLevelColor = (level: DoraMetrics[keyof DoraMetrics]): string => {
     switch(level) {
       case 'Elite': return 'bg-indigo-100 text-indigo-800';
       case 'High': return 'bg-green-100 text-green-800';
@@ -101,7 +128,12 @@ const GenAIDORATracker = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
-  
+
+  // When accessing data, add null checks
+  const selectedClientData = selectedClient ? clients.find(c => c.id === selectedClient) : null;
+  const selectedDoraMetrics = selectedClient ? doraMetrics[selectedClient] : null;
+  const selectedFeedback = selectedClient ? feedbackData[selectedClient] : null;
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
@@ -207,14 +239,14 @@ const GenAIDORATracker = () => {
                 {activeTab === 'overview' && (
                   <div>
                     <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900">{clients.find(c => c.id === selectedClient).name}</h2>
-                      <p className="text-gray-600">{clients.find(c => c.id === selectedClient).engagement}</p>
+                      <h2 className="text-2xl font-bold text-gray-900">{selectedClientData?.name}</h2>
+                      <p className="text-gray-600">{selectedClientData?.engagement}</p>
                       <div className="mt-2">
                         <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
-                          {clients.find(c => c.id === selectedClient).sector}
+                          {selectedClientData?.sector}
                         </span>
-                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(clients.find(c => c.id === selectedClient).genAiStatus)}`}>
-                          {clients.find(c => c.id === selectedClient).genAiStatus}
+                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(selectedClientData?.genAiStatus)}`}>
+                          {selectedClientData?.genAiStatus}
                         </span>
                       </div>
                     </div>
@@ -228,10 +260,10 @@ const GenAIDORATracker = () => {
                           <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
                             <div 
                               className="bg-indigo-600 h-2.5 rounded-full" 
-                              style={{ width: `${clients.find(c => c.id === selectedClient).usage}%` }}
+                              style={{ width: `${selectedClientData?.usage}%` }}
                             ></div>
                           </div>
-                          <p className="text-sm font-medium">{clients.find(c => c.id === selectedClient).usage}% of team members</p>
+                          <p className="text-sm font-medium">{selectedClientData?.usage}% of team members</p>
                         </div>
                       </div>
                       
@@ -241,26 +273,26 @@ const GenAIDORATracker = () => {
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <p className="text-sm text-gray-500">Deployment Frequency</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(doraMetrics[selectedClient].deploymentFrequency)}`}>
-                              {doraMetrics[selectedClient].deploymentFrequency}
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.deploymentFrequency)}`}>
+                              {selectedDoraMetrics?.deploymentFrequency}
                             </span>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Lead Time for Changes</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(doraMetrics[selectedClient].leadTime)}`}>
-                              {doraMetrics[selectedClient].leadTime}
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.leadTime)}`}>
+                              {selectedDoraMetrics?.leadTime}
                             </span>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Mean Time to Recovery</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(doraMetrics[selectedClient].mttr)}`}>
-                              {doraMetrics[selectedClient].mttr}
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.mttr)}`}>
+                              {selectedDoraMetrics?.mttr}
                             </span>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Change Failure Rate</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(doraMetrics[selectedClient].changeFailureRate)}`}>
-                              {doraMetrics[selectedClient].changeFailureRate}
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.changeFailureRate)}`}>
+                              {selectedDoraMetrics?.changeFailureRate}
                             </span>
                           </div>
                         </div>
@@ -271,18 +303,18 @@ const GenAIDORATracker = () => {
                     <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">Feedback Summary</h3>
                       
-                      {feedbackData[selectedClient].satisfaction > 0 ? (
+                      {selectedFeedback?.satisfaction > 0 ? (
                         <div>
                           <div className="flex mb-4">
                             <div className="mr-6">
                               <div className="flex items-center">
-                                <span className="font-medium text-xl">{feedbackData[selectedClient].satisfaction.toFixed(1)}</span>
+                                <span className="font-medium text-xl">{selectedFeedback?.satisfaction.toFixed(1)}</span>
                                 <span className="text-gray-500 text-sm ml-1">satisfaction</span>
                               </div>
                             </div>
                             <div>
                               <div className="flex items-center">
-                                <span className="font-medium text-xl">{feedbackData[selectedClient].productivity.toFixed(1)}</span>
+                                <span className="font-medium text-xl">{selectedFeedback?.productivity.toFixed(1)}</span>
                                 <span className="text-gray-500 text-sm ml-1">productivity</span>
                               </div>
                             </div>
@@ -290,18 +322,18 @@ const GenAIDORATracker = () => {
                           
                           <div className="mb-3">
                             <p className="text-sm text-gray-500 mb-1">Team Feedback</p>
-                            <p className="text-sm">{feedbackData[selectedClient].summary}</p>
+                            <p className="text-sm">{selectedFeedback?.summary}</p>
                           </div>
                           
                           <div>
                             <p className="text-sm text-gray-500 mb-1">Success Stories</p>
-                            <p className="text-sm">{feedbackData[selectedClient].successStories || "No success stories documented yet"}</p>
+                            <p className="text-sm">{selectedFeedback?.successStories || "No success stories documented yet"}</p>
                           </div>
                         </div>
                       ) : (
                         <div className="bg-yellow-50 border border-yellow-200 rounded p-4 text-yellow-800">
                           <p className="font-medium">Feedback not yet available</p>
-                          <p className="text-sm">{feedbackData[selectedClient].summary}</p>
+                          <p className="text-sm">{selectedFeedback?.summary}</p>
                         </div>
                       )}
                     </div>
