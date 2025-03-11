@@ -245,7 +245,7 @@ const GenAIDORATracker = () => {
                         <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded-full mr-2">
                           {selectedClientData?.sector}
                         </span>
-                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(selectedClientData?.genAiStatus)}`}>
+                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(selectedClientData?.genAiStatus ?? 'Not Started')}`}>
                           {selectedClientData?.genAiStatus}
                         </span>
                       </div>
@@ -273,25 +273,25 @@ const GenAIDORATracker = () => {
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <p className="text-sm text-gray-500">Deployment Frequency</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.deploymentFrequency)}`}>
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.deploymentFrequency ?? 'Not Provided')}`}>
                               {selectedDoraMetrics?.deploymentFrequency}
                             </span>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Lead Time for Changes</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.leadTime)}`}>
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.leadTime ?? 'Not Provided')}`}>
                               {selectedDoraMetrics?.leadTime}
                             </span>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Mean Time to Recovery</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.mttr)}`}>
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.mttr ?? 'Not Provided')}`}>
                               {selectedDoraMetrics?.mttr}
                             </span>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Change Failure Rate</p>
-                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.changeFailureRate)}`}>
+                            <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded ${getDoraLevelColor(selectedDoraMetrics?.changeFailureRate ?? 'Not Provided')}`}>
                               {selectedDoraMetrics?.changeFailureRate}
                             </span>
                           </div>
@@ -303,7 +303,7 @@ const GenAIDORATracker = () => {
                     <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">Feedback Summary</h3>
                       
-                      {selectedFeedback?.satisfaction > 0 ? (
+                      {selectedFeedback?.satisfaction ?? -1 > 0 ? (
                         <div>
                           <div className="flex mb-4">
                             <div className="mr-6">
